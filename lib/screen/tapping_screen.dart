@@ -33,24 +33,25 @@ class _TappingScreen extends State<TappingScreen> {
     }
   }
 
-  void runningCountdown(Player player) {
+  void runningCountdown(Player? player) {
 
     //Si jeu est en pause (running à false) et que la personne qui redemarre n'est pas la bonne
-    if(game.currentPlayer != null && game.currentPlayer != player && game.running == false) {
+    // si le jeu est fini
+    if((game.currentPlayer != null && game.currentPlayer != player && !game.running) || game.endGame) {
       return;
     }
 
     game.running = true;
     game.currentPlayer = player;
 
-    player.timer = Timer.periodic(
+    player?.timer = Timer.periodic(
       const Duration(milliseconds: 10),
       (Timer timer) {
         //Si le temps tombe à 0 alors stop
-        //TODO pour tout le monde
         if (player.remainingTime == 0) {
           setState(() {
             game.running = false;
+            game.endGame = true;
             timer.cancel();
           });
         }
@@ -115,6 +116,11 @@ class _TappingScreen extends State<TappingScreen> {
                     onPressed: () {
                       setState(() {
                         game.running = !game.running;
+
+                        //Si pause -> relance le joueur
+                        if(game.running) {
+                          runningCountdown(game.currentPlayer);
+                        }
                       });
                     },
                     icon: Icon(game.running ? Icons.pause : Icons.play_arrow),
