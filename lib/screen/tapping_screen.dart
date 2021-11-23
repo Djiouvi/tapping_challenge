@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:tapping/game.dart';
 import 'package:tapping/player.dart';
 
 class TappingScreen extends StatefulWidget {
@@ -19,7 +20,7 @@ class _TappingScreen extends State<TappingScreen> {
   var player1 = Player(remainingTime: TappingScreen.defaultRemainingTime);
   var player2 = Player(remainingTime: TappingScreen.defaultRemainingTime);
 
-  bool running = false;
+  var game = Game();
 
   void startTimer(Player currentPlayer, Player nextPlayer) {
     if (currentPlayer.timer.isActive) {
@@ -27,30 +28,43 @@ class _TappingScreen extends State<TappingScreen> {
       startTimer(nextPlayer, currentPlayer);
     } else {
       if (!nextPlayer.timer.isActive) {
-        running = true;
         runningCountdown(currentPlayer);
       }
     }
   }
 
   void runningCountdown(Player player) {
+
+    //Si jeu est en pause (running à false) et que la personne qui redemarre n'est pas la bonne
+    if(game.currentPlayer != null && game.currentPlayer != player && game.running == false) {
+      return;
+    }
+
+    game.running = true;
+    game.currentPlayer = player;
+
     player.timer = Timer.periodic(
       const Duration(milliseconds: 10),
       (Timer timer) {
+        //Si le temps tombe à 0 alors stop
+        //TODO pour tout le monde
         if (player.remainingTime == 0) {
           setState(() {
-            running = false;
+            game.running = false;
             timer.cancel();
           });
         }
-        if (!running && timer.isActive) {
+
+        //Pause
+         else if (!game.running && timer.isActive) {
           setState(() {
             timer.cancel();
           });
         } else {
+          //Le jeu classique
           setState(() {
-            if (!running) {
-              running = true;
+            if (!game.running) {
+              game.running = true;
             }
             player.remainingTime--;
           });
@@ -100,10 +114,10 @@ class _TappingScreen extends State<TappingScreen> {
                   IconButton(
                     onPressed: () {
                       setState(() {
-                        running = !running;
+                        game.running = !game.running;
                       });
                     },
-                    icon: Icon(running ? Icons.pause : Icons.play_arrow),
+                    icon: Icon(game.running ? Icons.pause : Icons.play_arrow),
                   ),
                   IconButton(
                     onPressed: () {
