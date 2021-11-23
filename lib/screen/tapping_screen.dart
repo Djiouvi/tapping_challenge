@@ -7,6 +7,8 @@ import 'package:tapping/player.dart';
 class TappingScreen extends StatefulWidget {
   const TappingScreen({Key? key}) : super(key: key);
 
+  static const int defaultRemainingTime = 1000;
+
   @override
   _TappingScreen createState() {
     return _TappingScreen();
@@ -14,8 +16,8 @@ class TappingScreen extends StatefulWidget {
 }
 
 class _TappingScreen extends State<TappingScreen> {
-  var player1 = Player(remainingTime: 100);
-  var player2 = Player(remainingTime: 1000);
+  var player1 = Player(remainingTime: TappingScreen.defaultRemainingTime);
+  var player2 = Player(remainingTime: TappingScreen.defaultRemainingTime);
 
   bool running = false;
 
@@ -33,7 +35,7 @@ class _TappingScreen extends State<TappingScreen> {
 
   void runningCountdown(Player player) {
     player.timer = Timer.periodic(
-      const Duration(milliseconds: 1),
+      const Duration(milliseconds: 10),
       (Timer timer) {
         if (player.remainingTime == 0) {
           setState(() {
@@ -59,8 +61,8 @@ class _TappingScreen extends State<TappingScreen> {
 
   void reset() {
     setState(() {
-      player1 = Player(remainingTime: 100);
-      player2 = Player(remainingTime: 1000);
+      player1 = Player(remainingTime: TappingScreen.defaultRemainingTime);
+      player2 = Player(remainingTime: TappingScreen.defaultRemainingTime);
     });
   }
 
