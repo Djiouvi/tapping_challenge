@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:tapping/component/touch_area.dart';
 import 'package:tapping/game.dart';
 import 'package:tapping/player.dart';
 
@@ -34,10 +35,12 @@ class _TappingScreen extends State<TappingScreen> {
   }
 
   void runningCountdown(Player? player) {
-
     //Si jeu est en pause (running à false) et que la personne qui redemarre n'est pas la bonne
     // si le jeu est fini
-    if((game.currentPlayer != null && game.currentPlayer != player && !game.running) || game.endGame) {
+    if ((game.currentPlayer != null &&
+            game.currentPlayer != player &&
+            !game.running) ||
+        game.endGame) {
       return;
     }
 
@@ -57,7 +60,7 @@ class _TappingScreen extends State<TappingScreen> {
         }
 
         //Pause
-         else if (!game.running && timer.isActive) {
+        else if (!game.running && timer.isActive) {
           setState(() {
             timer.cancel();
           });
@@ -76,6 +79,7 @@ class _TappingScreen extends State<TappingScreen> {
 
   void reset() {
     setState(() {
+      game = Game();
       player1 = Player(remainingTime: TappingScreen.defaultRemainingTime);
       player2 = Player(remainingTime: TappingScreen.defaultRemainingTime);
     });
@@ -87,24 +91,15 @@ class _TappingScreen extends State<TappingScreen> {
       body: SafeArea(
         child: Column(
           children: <Widget>[
-            Expanded(
-              child: InkWell(
-                onTap: () {
+            TouchArea(
+                flex: 4,
+                player: player1,
+                color: Colors.amber,
+                startTimer: () {
                   setState(() {
                     startTimer(player1, player2);
                   });
-                },
-                child: Container(
-                  color: Colors.red,
-                  child: Center(
-                    child: Text(
-                      "${player1.remainingSeconds}",
-                    ),
-                  ),
-                ),
-              ),
-              flex: 4,
-            ),
+                }),
             Expanded(
               child: Row(
                 children: [
@@ -118,7 +113,7 @@ class _TappingScreen extends State<TappingScreen> {
                         game.running = !game.running;
 
                         //Si pause -> relance le joueur
-                        if(game.running) {
+                        if (game.running) {
                           runningCountdown(game.currentPlayer);
                         }
                       });
@@ -135,24 +130,15 @@ class _TappingScreen extends State<TappingScreen> {
               ),
               flex: 1,
             ),
-            Expanded(
-              child: InkWell(
-                onTap: () {
+            TouchArea(
+                flex: 4,
+                player: player2,
+                color: Colors.amber,
+                startTimer: () {
                   setState(() {
                     startTimer(player2, player1);
                   });
-                },
-                child: Container(
-                  color: Colors.green,
-                  child: Center(
-                    child: Text(
-                      "${player2.remainingSeconds}",
-                    ),
-                  ),
-                ),
-              ),
-              flex: 4,
-            ),
+                }),
           ],
         ),
       ),
