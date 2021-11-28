@@ -10,4 +10,9 @@ class Game {
     this.currentPlayer,
     this.endGame = false,
   });
+
+  void gameOver() {
+    running = false;
+    endGame = true;
+  }
 }

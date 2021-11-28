@@ -18,10 +18,10 @@ class TappingScreen extends StatefulWidget {
 }
 
 class _TappingScreen extends State<TappingScreen> {
+  var game = Game();
+
   var player1 = Player(remainingTime: TappingScreen.defaultRemainingTime);
   var player2 = Player(remainingTime: TappingScreen.defaultRemainingTime);
-
-  var game = Game();
 
   void startTimer(Player currentPlayer, Player nextPlayer) {
     if (currentPlayer.timer.isActive) {
@@ -30,6 +30,8 @@ class _TappingScreen extends State<TappingScreen> {
     } else {
       if (!nextPlayer.timer.isActive) {
         runningCountdown(currentPlayer);
+      } else {
+        losingLife(currentPlayer);
       }
     }
   }
@@ -53,8 +55,7 @@ class _TappingScreen extends State<TappingScreen> {
         //Si le temps tombe à 0 alors stop
         if (player.remainingTime == 0) {
           setState(() {
-            game.running = false;
-            game.endGame = true;
+            game.gameOver();
             timer.cancel();
           });
         }
@@ -77,7 +78,13 @@ class _TappingScreen extends State<TappingScreen> {
     );
   }
 
-  void reset() {
+  void losingLife(Player nextPlayer) {
+    setState(() {
+      nextPlayer.losingLife(game);
+    });
+  }
+
+  void resetGame() {
     setState(() {
       game = Game();
       player1 = Player(remainingTime: TappingScreen.defaultRemainingTime);
@@ -122,7 +129,7 @@ class _TappingScreen extends State<TappingScreen> {
                   ),
                   IconButton(
                     onPressed: () {
-                      reset();
+                      resetGame();
                     },
                     icon: const Icon(Icons.restart_alt),
                   ),
@@ -131,14 +138,15 @@ class _TappingScreen extends State<TappingScreen> {
               flex: 1,
             ),
             TouchArea(
-                flex: 4,
-                player: player2,
-                color: Colors.amber,
-                startTimer: () {
-                  setState(() {
-                    startTimer(player2, player1);
-                  });
-                }),
+              flex: 4,
+              player: player2,
+              color: Colors.amber,
+              startTimer: () {
+                setState(() {
+                  startTimer(player2, player1);
+                });
+              },
+            ),
           ],
         ),
       ),
