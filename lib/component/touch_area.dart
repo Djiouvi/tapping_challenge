@@ -21,7 +21,7 @@ class TouchArea extends StatelessWidget {
     return Expanded(
       flex: flex,
       child: InkWell(
-        onTap: () => startTimer,
+        onTap: () => startTimer(),
         child: Container(
           color: color,
           child: Center(
